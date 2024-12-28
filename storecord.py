@@ -15,6 +15,8 @@ from tkinter import simpledialog
 from tkinter import filedialog
 from tkinter import messagebox
 
+import client
+
 DB_FILE =       "database.json"
 CONFIG_FILE =   "config.txt"
 TOKEN =         None
@@ -45,38 +47,7 @@ except FileNotFoundError:
 
 atexit.register(lambda : json.dump(database, open(DB_FILE, "w"), indent=4))
 
-# Discord bot code
-
-class Client(discord.Client):
-    
-    channel: discord.TextChannel = None
-
-    async def upload(self, filename: str, parts: list[bytes]):
-        temp_file = f"tmp-{filename}"
-        for i in range(len(parts)):
-            with open(temp_file, "wb") as f:
-                f.write(parts[i])
-
-            message = await self.channel.send(
-                file = discord.File(temp_file, f"{filename}{('-' + str(i)) if i > 0 else ''}")
-            )
-            parts[i] = message.attachments[0].url
-            os.remove(temp_file)
-
-        database[filename] = parts
-
-client = Client(
-    intents=discord.Intents.all())
-
-@client.event
-async def on_ready():
-    client.channel = await client.fetch_channel(CHANNEL_ID)
-    if not client.channel:
-        exit(1)
-
-bot_thread = threading.Thread(target=lambda : client.run(TOKEN))
-bot_thread.daemon = True
-bot_thread.start()
+bot = client.run(CHANNEL_ID, TOKEN)
 
 # GUI code
 
@@ -122,7 +93,7 @@ def add_files():
 
         if not messagebox.askyesno("Uploading", f"Starting upload for '{filename}', continue?"):
             continue
-        asyncio.run_coroutine_threadsafe(client.upload(filename, parts), client.loop)
+        asyncio.run_coroutine_threadsafe(bot.upload(filename, parts), bot.loop)
 
         time.sleep(1) # Give the coroutines a second... not the cleanest
         while True:
@@ -212,5 +183,5 @@ root.mainloop()
 
 # Finalise
 
-client.loop.stop()
+bot.loop.stop()
 
