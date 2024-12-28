@@ -1,5 +1,5 @@
 # Storecord
 
-Your Discord-based storage.
+Just download the source code for this repository and run `storecord.py`.
 
-**Incomplete. I will continue to update.**
+This project requires the `discord` and `requests` modules.
