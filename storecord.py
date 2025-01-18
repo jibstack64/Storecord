@@ -1,11 +1,9 @@
 
 # Include required libraries
-import discord
 import tkinter
-import threading
 import requests
 import asyncio
-import os, sys
+import os
 import atexit
 import json
 import math
