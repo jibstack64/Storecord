@@ -93,7 +93,7 @@ def add_files():
 
         if not messagebox.askyesno("Uploading", f"Starting upload for '{filename}', continue?"):
             continue
-        asyncio.run_coroutine_threadsafe(bot.upload(filename, parts), bot.loop)
+        asyncio.run_coroutine_threadsafe(bot.upload(database, filename, parts), bot.loop)
 
         time.sleep(1) # Give the coroutines a second... not the cleanest
         while True:
